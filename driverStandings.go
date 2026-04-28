@@ -6,8 +6,8 @@ import (
 )
 
 type DriverStandingPage struct {
-	DriverStandings []DriverStanding
-	PageInfo        PageInfo
+	StandingsLists []StandingsList
+	PageInfo       PageInfo
 }
 
 func (c *Client) GetDriverStandings(opts ...Option) (*DriverStandingPage, error) {
@@ -23,7 +23,7 @@ func (c *Client) GetDriverStandings(opts ...Option) (*DriverStandingPage, error)
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &DriverStandingPage{
-		DriverStandings: result.MRData.StandingsTable.StandingsLists[0].DriverStandings,
+		StandingsLists: result.MRData.StandingsTable.StandingsLists,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetDriverStandings(opts ...Option) (*DriverStandingPage, error)
 	}, nil
 }
 
-func (c *Client) GetAllDriverStandings(opts ...Option) ([]DriverStanding, error) {
-	var all []DriverStanding
+func (c *Client) GetAllDriverStandings(opts ...Option) ([]StandingsList, error) {
+	var all []StandingsList
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllDriverStandings(opts ...Option) ([]DriverStanding, error)
 			return nil, err
 		}
 
-		all = append(all, page.DriverStandings...)
+		all = append(all, page.StandingsLists...)
 
 		if !page.PageInfo.HasNext() {
 			break

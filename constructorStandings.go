@@ -6,8 +6,8 @@ import (
 )
 
 type ConstructorStandingPage struct {
-	ConstructorStandings []ConstructorStanding
-	PageInfo             PageInfo
+	StandingsLists []StandingsList
+	PageInfo       PageInfo
 }
 
 func (c *Client) GetConstructorStandings(opts ...Option) (*ConstructorStandingPage, error) {
@@ -23,7 +23,7 @@ func (c *Client) GetConstructorStandings(opts ...Option) (*ConstructorStandingPa
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &ConstructorStandingPage{
-		ConstructorStandings: result.MRData.StandingsTable.StandingsLists[0].ConstructorStandings,
+		StandingsLists: result.MRData.StandingsTable.StandingsLists,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetConstructorStandings(opts ...Option) (*ConstructorStandingPa
 	}, nil
 }
 
-func (c *Client) GetAllConstructorStandings(opts ...Option) ([]ConstructorStanding, error) {
-	var all []ConstructorStanding
+func (c *Client) GetAllConstructorStandings(opts ...Option) ([]StandingsList, error) {
+	var all []StandingsList
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllConstructorStandings(opts ...Option) ([]ConstructorStandi
 			return nil, err
 		}
 
-		all = append(all, page.ConstructorStandings...)
+		all = append(all, page.StandingsLists...)
 
 		if !page.PageInfo.HasNext() {
 			break

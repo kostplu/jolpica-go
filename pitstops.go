@@ -6,7 +6,7 @@ import (
 )
 
 type PitStopPage struct {
-	PitStops []PitStop
+	Races    []Race
 	PageInfo PageInfo
 }
 
@@ -23,7 +23,7 @@ func (c *Client) GetPitStops(opts ...Option) (*PitStopPage, error) {
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &PitStopPage{
-		PitStops: result.MRData.RaceTable.Races[0].PitStops,
+		Races: result.MRData.RaceTable.Races,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetPitStops(opts ...Option) (*PitStopPage, error) {
 	}, nil
 }
 
-func (c *Client) GetAllPitStops(opts ...Option) ([]PitStop, error) {
-	var all []PitStop
+func (c *Client) GetAllPitStops(opts ...Option) ([]Race, error) {
+	var all []Race
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllPitStops(opts ...Option) ([]PitStop, error) {
 			return nil, err
 		}
 
-		all = append(all, page.PitStops...)
+		all = append(all, page.Races...)
 
 		if !page.PageInfo.HasNext() {
 			break

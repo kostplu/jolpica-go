@@ -22,14 +22,14 @@ type apiResponse struct {
 }
 
 type Driver struct {
-	DriverID        string `json:"driverId"`
-	PermanentNumber string `json:"permanentNumber"`
-	Code            string `json:"code"`
-	URL             string `json:"url"`
-	GivenName       string `json:"givenName"`
-	FamilyName      string `json:"familyName"`
-	DateOfBirth     string `json:"dateOfBirth"`
-	Nationality     string `json:"nationality"`
+	DriverID        string    `json:"driverId"`
+	PermanentNumber IntString `json:"permanentNumber"`
+	Code            string    `json:"code"`
+	URL             string    `json:"url"`
+	GivenName       string    `json:"givenName"`
+	FamilyName      string    `json:"familyName"`
+	DateOfBirth     Date      `json:"dateOfBirth"`
+	Nationality     string    `json:"nationality"`
 }
 
 type driverTable struct {
@@ -52,69 +52,73 @@ type Circuit struct {
 }
 
 type Session struct {
-	Date string `json:"date"`
+	Date Date   `json:"date"`
 	Time string `json:"time"`
 }
 
 type Timing struct {
-	DriverID string `json:"driverId"`
-	Time     string `json:"time"`
-	Position string `json:"position"`
+	DriverID string  `json:"driverId"`
+	Time     LapTime `json:"time"`
+	Position string  `json:"position"`
 }
 
 type Lap struct {
-	Number  string   `json:"number"`
-	Timings []Timing `json:"Timings"`
+	Number  IntString `json:"number"`
+	Timings []Timing  `json:"Timings"`
 }
 
 type PitStop struct {
-	DriverID string `json:"driverId"`
-	Lap      string `json:"lap"`
-	Stop     string `json:"stop"`
-	Time     string `json:"time"`
-	Duration string `json:"duration"`
+	DriverID string    `json:"driverId"`
+	Lap      IntString `json:"lap"`
+	Stop     string    `json:"stop"`
+	Time     string    `json:"time"`
+	Duration string    `json:"duration"`
 }
 
 type QualifyingResult struct {
-	Number      string      `json:"number"`
-	Position    string      `json:"position"`
+	Number      IntString   `json:"number"`
+	Position    IntString   `json:"position"`
 	Driver      Driver      `json:"Driver"`
 	Constructor Constructor `json:"Constructor"`
-	Q1          string      `json:"Q1,omitempty"`
-	Q2          string      `json:"Q2,omitempty"`
-	Q3          string      `json:"Q3,omitempty"`
+	Q1          LapTime     `json:"Q1"`
+	Q2          LapTime     `json:"Q2"`
+	Q3          LapTime     `json:"Q3"`
 }
 
 type Result struct {
-	Number       string      `json:"number"`
-	Position     string      `json:"position"`
+	Number       IntString   `json:"number"`
+	Position     IntString   `json:"position"`
 	PositionText string      `json:"positionText"`
-	Points       string      `json:"points"`
+	Points       FloatString `json:"points"`
 	Driver       Driver      `json:"Driver"`
 	Constructor  Constructor `json:"Constructor"`
-	Grid         string      `json:"grid"`
-	Laps         string      `json:"laps"`
+	Grid         IntString   `json:"grid"`
+	Laps         IntString   `json:"laps"`
 	Status       string      `json:"status"`
 	Time         struct {
 		Millis string `json:"millis"`
 		Time   string `json:"time"`
-	} `json:"Time,omitempty"`
-	FastestLap struct {
-		Rank string `json:"rank"`
-		Lap  string `json:"lap"`
-		Time struct {
-			Time string `json:"time"`
-		} `json:"Time"`
-	} `json:"FastestLap,omitempty"`
+	} `json:"Time"`
+	FastestLap FastestLap `json:"FastestLap"`
+}
+
+type LapTimeObject struct {
+	LapTime `json:"time"`
+}
+
+type FastestLap struct {
+	Rank IntString     `json:"rank"`
+	Lap  IntString     `json:"lap"`
+	Time LapTimeObject `json:"Time"`
 }
 
 type Race struct {
-	Season            string             `json:"season"`
-	Round             string             `json:"round"`
+	Season            IntString          `json:"season"`
+	Round             IntString          `json:"round"`
 	URL               string             `json:"url"`
 	RaceName          string             `json:"raceName"`
 	Circuit           Circuit            `json:"Circuit"`
-	Date              string             `json:"date"`
+	Date              Date               `json:"date"`
 	Time              string             `json:"time"`
 	Results           []Result           `json:"Results,omitempty"`
 	SprintResults     []Result           `json:"SprintResults,omitempty"`
@@ -128,14 +132,14 @@ type Race struct {
 }
 
 type raceTable struct {
-	Season string `json:"season"`
-	Round  string `json:"round,omitempty"`
-	Races  []Race `json:"Races"`
+	Season IntString `json:"season"`
+	Round  IntString `json:"round,omitempty"`
+	Races  []Race    `json:"Races"`
 }
 
 type Season struct {
-	Season string `json:"season"`
-	URL    string `json:"url"`
+	Season IntString `json:"season"`
+	URL    string    `json:"url"`
 }
 
 type seasonTable struct {
@@ -154,44 +158,44 @@ type Constructor struct {
 }
 
 type constructorTable struct {
-	Season       string        `json:"season"`
+	Season       IntString     `json:"season"`
 	Constructors []Constructor `json:"Constructors"`
 }
 
 type DriverStanding struct {
-	Position     string        `json:"position"`
+	Position     IntString     `json:"position"`
 	PositionText string        `json:"positionText"`
-	Points       string        `json:"points"`
-	Wins         string        `json:"wins"`
+	Points       FloatString   `json:"points"`
+	Wins         IntString     `json:"wins"`
 	Driver       Driver        `json:"Driver"`
 	Constructors []Constructor `json:"Constructor"`
 }
 
 type ConstructorStanding struct {
-	Position     string      `json:"position"`
+	Position     IntString   `json:"position"`
 	PositionText string      `json:"positionText"`
-	Points       string      `json:"points"`
-	Wins         string      `json:"wins"`
+	Points       FloatString `json:"points"`
+	Wins         IntString   `json:"wins"`
 	Constructor  Constructor `json:"Constructor"`
 }
 
 type StandingsList struct {
-	Season               string                `json:"season"`
-	Round                string                `json:"round"`
+	Season               IntString             `json:"season"`
+	Round                IntString             `json:"round"`
 	DriverStandings      []DriverStanding      `json:"DriverStandings,omitempty"`
 	ConstructorStandings []ConstructorStanding `json:"ConstructorStandings,omitempty"`
 }
 
 type standingsTable struct {
-	Season         string          `json:"season"`
-	Round          string          `json:"round"`
+	Season         IntString       `json:"season"`
+	Round          IntString       `json:"round"`
 	StandingsLists []StandingsList `json:"StandingsLists"`
 }
 
 type Status struct {
-	StatusID string `json:"statusId"`
-	Count    string `json:"count"`
-	Status   string `json:"status"`
+	StatusID string    `json:"statusId"`
+	Count    IntString `json:"count"`
+	Status   string    `json:"status"`
 }
 
 type statusTable struct {
