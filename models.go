@@ -197,3 +197,17 @@ type Status struct {
 type statusTable struct {
 	Status []Status `json:"Status"`
 }
+
+type PageInfo struct {
+	Total  int
+	Offset int
+	Limit  int
+}
+
+func (p PageInfo) HasNext() bool {
+	return p.Offset+p.Limit < p.Total
+}
+
+func (p PageInfo) NextOffset() int {
+	return p.Offset + p.Limit
+}
