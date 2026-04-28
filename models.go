@@ -3,23 +3,23 @@ package f1
 type mrData struct {
 	Series string `json:"series"`
 	URL    string `json:"url"`
-	Limit  int    `json:"limit"`
-	Offset int    `json:"offset"`
-	Total  int    `json:"total"`
+	Limit  string `json:"limit"`
+	Offset string `json:"offset"`
+	Total  string `json:"total"`
 }
 
-// type apiResponse[T any] struct {
-// 	MRData struct {
-// 		mrData
-// 		DriverTable      *driverTable      `json:"DriverTable,omitempty"`
-// 		RaceTable        *raceTable        `json:"RaceTable,omitempty"`
-// 		SeasonTable      *seasonTable      `json:"SeasonTable,omitempty"`
-// 		CircuitTable     *circuitTable     `json:"CircuitTable,omitempty"`
-// 		ConstructorTable *constructorTable `json:"ConstructorTable,omitempty"`
-// 		StandingsTable   *standingsTable   `json:"StandingsTable,omitempty"`
-// 		StatusTable      *statusTable      `json:"StatusTable,omitempty"`
-// 	} `json:"MRData"`
-// }
+type apiResponse struct {
+	MRData struct {
+		mrData
+		DriverTable      *driverTable      `json:"DriverTable,omitempty"`
+		RaceTable        *raceTable        `json:"RaceTable,omitempty"`
+		SeasonTable      *seasonTable      `json:"SeasonTable,omitempty"`
+		CircuitTable     *circuitTable     `json:"CircuitTable,omitempty"`
+		ConstructorTable *constructorTable `json:"ConstructorTable,omitempty"`
+		StandingsTable   *standingsTable   `json:"StandingsTable,omitempty"`
+		StatusTable      *statusTable      `json:"StatusTable,omitempty"`
+	} `json:"MRData"`
+}
 
 type Driver struct {
 	DriverID        string `json:"driverId"`

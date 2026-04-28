@@ -3,12 +3,7 @@ package f1
 import "fmt"
 
 func (c *Client) GetSprintResults(season string) ([]Result, error) {
-	var result struct {
-		MRData struct {
-			mrData
-			RaceTable raceTable `json:"RaceTable"`
-		} `json:"MRData"`
-	}
+	var result apiResponse
 
 	path := fmt.Sprintf("%s/results.json", season)
 	if err := c.get(path, &result); err != nil {
