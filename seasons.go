@@ -1,9 +1,10 @@
 package f1
 
-func (c *Client) GetSeasons() ([]Season, error) {
+func (c *Client) GetSeasons(opts ...Option) ([]Season, error) {
 	var result apiResponse
 
-	if err := c.get("seasons.json", &result); err != nil {
+	path := buildPath("seasons", opts)
+	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}
 

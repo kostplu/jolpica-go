@@ -1,14 +1,12 @@
 package f1
 
-import "fmt"
-
-func (c *Client) GetQualifyingResults(season string, round int) ([]QualifyingResult, error) {
+func (c *Client) GetQualifyingResults(opts ...Option) ([]QualifyingResult, error) {
 	var result apiResponse
 
-	path := fmt.Sprintf("%s/qualifying.json", season)
+	path := buildPath("qualifying", opts)
 	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}
 
-	return result.MRData.RaceTable.Races[round].QualifyingResults, nil
+	return result.MRData.RaceTable.Races[0].QualifyingResults, nil
 }
