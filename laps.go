@@ -6,7 +6,7 @@ import (
 )
 
 type LapPage struct {
-	Laps     []Lap
+	Races    []Race
 	PageInfo PageInfo
 }
 
@@ -23,7 +23,7 @@ func (c *Client) GetLaps(opts ...Option) (*LapPage, error) {
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &LapPage{
-		Laps: result.MRData.RaceTable.Races[0].Laps,
+		Races: result.MRData.RaceTable.Races,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetLaps(opts ...Option) (*LapPage, error) {
 	}, nil
 }
 
-func (c *Client) GetAllLaps(opts ...Option) ([]Lap, error) {
-	var all []Lap
+func (c *Client) GetAllLaps(opts ...Option) ([]Race, error) {
+	var all []Race
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllLaps(opts ...Option) ([]Lap, error) {
 			return nil, err
 		}
 
-		all = append(all, page.Laps...)
+		all = append(all, page.Races...)
 
 		if !page.PageInfo.HasNext() {
 			break

@@ -6,7 +6,7 @@ import (
 )
 
 type SprintResultPage struct {
-	Results  []Result
+	Races    []Race
 	PageInfo PageInfo
 }
 
@@ -23,7 +23,7 @@ func (c *Client) GetSprintResults(opts ...Option) (*SprintResultPage, error) {
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &SprintResultPage{
-		Results: result.MRData.RaceTable.Races[0].SprintResults,
+		Races: result.MRData.RaceTable.Races,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetSprintResults(opts ...Option) (*SprintResultPage, error) {
 	}, nil
 }
 
-func (c *Client) GetAllSprintResults(opts ...Option) ([]Result, error) {
-	var all []Result
+func (c *Client) GetAllSprintResults(opts ...Option) ([]Race, error) {
+	var all []Race
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllSprintResults(opts ...Option) ([]Result, error) {
 			return nil, err
 		}
 
-		all = append(all, page.Results...)
+		all = append(all, page.Races...)
 
 		if !page.PageInfo.HasNext() {
 			break

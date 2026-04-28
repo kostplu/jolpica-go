@@ -6,8 +6,8 @@ import (
 )
 
 type QualifyingResultPage struct {
-	QualifyingResults []QualifyingResult
-	PageInfo          PageInfo
+	Races    []Race
+	PageInfo PageInfo
 }
 
 func (c *Client) GetQualifyingResults(opts ...Option) (*QualifyingResultPage, error) {
@@ -23,7 +23,7 @@ func (c *Client) GetQualifyingResults(opts ...Option) (*QualifyingResultPage, er
 	offset, _ := strconv.Atoi(result.MRData.Offset)
 
 	return &QualifyingResultPage{
-		QualifyingResults: result.MRData.RaceTable.Races[0].QualifyingResults,
+		Races: result.MRData.RaceTable.Races,
 		PageInfo: PageInfo{
 			Total:  total,
 			Limit:  limit,
@@ -32,8 +32,8 @@ func (c *Client) GetQualifyingResults(opts ...Option) (*QualifyingResultPage, er
 	}, nil
 }
 
-func (c *Client) GetAllQualifyingResults(opts ...Option) ([]QualifyingResult, error) {
-	var all []QualifyingResult
+func (c *Client) GetAllQualifyingResults(opts ...Option) ([]Race, error) {
+	var all []Race
 	offset := 0
 
 	for {
@@ -42,7 +42,7 @@ func (c *Client) GetAllQualifyingResults(opts ...Option) ([]QualifyingResult, er
 			return nil, err
 		}
 
-		all = append(all, page.QualifyingResults...)
+		all = append(all, page.Races...)
 
 		if !page.PageInfo.HasNext() {
 			break
