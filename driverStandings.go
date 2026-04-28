@@ -1,11 +1,9 @@
 package f1
 
-import "fmt"
-
-func (c *Client) GetDriverStandings(season string) ([]DriverStanding, error) {
+func (c *Client) GetDriverStandings(opts ...Option) ([]DriverStanding, error) {
 	var result apiResponse
 
-	path := fmt.Sprintf("%s/driverStandings.json", season)
+	path := buildPath("driverStandings", opts)
 	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}

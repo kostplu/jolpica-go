@@ -1,9 +1,10 @@
 package f1
 
-func (c *Client) GetCircuits() ([]Circuit, error) {
+func (c *Client) GetCircuits(opts ...Option) ([]Circuit, error) {
 	var result apiResponse
 
-	if err := c.get("circuits.json", &result); err != nil {
+	path := buildPath("circuits", opts)
+	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}
 

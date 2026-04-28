@@ -1,11 +1,9 @@
 package f1
 
-import "fmt"
-
-func (c *Client) GetResults(season string) ([]Result, error) {
+func (c *Client) GetResults(opts ...Option) ([]Result, error) {
 	var result apiResponse
 
-	path := fmt.Sprintf("%s/results.json", season)
+	path := buildPath("results", opts)
 	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}
