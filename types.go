@@ -14,7 +14,7 @@ type LapTime struct {
 func (l *LapTime) UnmarshalJSON(data []byte) error {
 	// data arrives as `"1:23.456"` — with quotes
 	s := strings.Trim(string(data), `"`)
-	if s == "" || s == `\N` {
+	if s == "" || s == "\\N" || string(data) == "null" {
 		return nil // null value from API
 	}
 
@@ -47,7 +47,7 @@ type Date struct {
 
 func (d *Date) UnmarshalJSON(data []byte) error {
 	s := strings.Trim(string(data), `"`)
-	if s == "" || s == "\\N" {
+	if s == "" || s == "\\N" || string(data) == "null" {
 		return nil
 	}
 
@@ -64,7 +64,7 @@ type IntString int
 
 func (i *IntString) UnmarshalJSON(data []byte) error {
 	s := strings.Trim(string(data), `"`)
-	if s == "" || s == "\\N" {
+	if s == "" || s == "\\N" || string(data) == "null" {
 		return nil
 	}
 
@@ -81,7 +81,7 @@ type FloatString float64
 
 func (f *FloatString) UnmarshalJSON(data []byte) error {
 	s := strings.Trim(string(data), `"`)
-	if s == "" || s == "\\N" {
+	if s == "" || s == "\\N" || string(data) == "null" {
 		return nil
 	}
 
