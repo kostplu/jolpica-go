@@ -168,7 +168,7 @@ type DriverStanding struct {
 	Points       FloatString   `json:"points"`
 	Wins         IntString     `json:"wins"`
 	Driver       Driver        `json:"Driver"`
-	Constructors []Constructor `json:"Constructor"`
+	Constructors []Constructor `json:"Constructors"`
 }
 
 type ConstructorStanding struct {
