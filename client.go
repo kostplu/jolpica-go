@@ -20,16 +20,6 @@ type Client struct {
 
 type ClientOption func(*Client)
 
-func WithCache(path string, ttl time.Duration) ClientOption {
-	return func(c *Client) {
-		cache, err := newCache(path, ttl)
-		if err != nil {
-			return
-		}
-		c.cache = cache
-	}
-}
-
 func NewClient(opts ...ClientOption) *Client {
 	c := &Client{
 		baseURL: defaultBaseURL,
@@ -41,7 +31,39 @@ func NewClient(opts ...ClientOption) *Client {
 	for _, opt := range opts {
 		opt(c)
 	}
+
 	return c
+}
+
+func NewClientWithBaseURL(baseURL string, opts ...ClientOption) *Client {
+	c := &Client{
+		baseURL: baseURL,
+		httpClient: &http.Client{
+			Timeout: 10 * time.Second,
+		},
+	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	return c
+}
+
+func WithCache(path string, ttl time.Duration) ClientOption {
+	return func(c *Client) {
+		cache, err := newCache(path, ttl)
+		if err != nil {
+			return
+		}
+		c.cache = cache
+	}
+}
+
+func WitTimeout(timeout time.Duration) ClientOption {
+	return func(c *Client) {
+		c.httpClient.Timeout = timeout
+	}
 }
 
 func (c *Client) get(path string, target any) error {

@@ -39,7 +39,7 @@ func buildPath(endpoint string, opts []Option) string {
 		path += fmt.Sprintf("/drivers/%s", o.driver)
 	}
 
-	path += endpoint + ".json"
+	path += "/" + endpoint + ".json"
 
 	path += fmt.Sprintf("?limit=%d&offset=%d", o.limit, o.offest)
 

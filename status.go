@@ -1,9 +1,6 @@
 package f1
 
-import (
-	"strconv"
-	"time"
-)
+import "strconv"
 
 type StatusPage struct {
 	Statuses []Status
@@ -49,7 +46,6 @@ func (c *Client) GetAllStatus(opts ...Option) ([]Status, error) {
 		}
 
 		offset = page.PageInfo.NextOffset()
-		time.Sleep(200 * time.Millisecond) // be a good citizen
 	}
 
 	return all, nil

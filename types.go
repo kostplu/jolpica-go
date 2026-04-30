@@ -14,7 +14,7 @@ type LapTime struct {
 func (l *LapTime) UnmarshalJSON(data []byte) error {
 	// data arrives as `"1:23.456"` — with quotes
 	s := strings.Trim(string(data), `"`)
-	if s == "" || s == "\\N" {
+	if s == "" || s == `\N` {
 		return nil // null value from API
 	}
 

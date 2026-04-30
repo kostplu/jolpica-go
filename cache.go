@@ -3,6 +3,8 @@ package f1
 import (
 	"database/sql"
 	"time"
+
+	_ "modernc.org/sqlite"
 )
 
 type cache struct {
