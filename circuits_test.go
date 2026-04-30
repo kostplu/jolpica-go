@@ -88,6 +88,21 @@ func TestIntegration_GetCircuits(t *testing.T) {
 	}
 }
 
+func TestIntegration_GetCircuitsReturnsNoErrorOnInvalidSeason(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	client := NewClient()
+	page, err := client.GetCircuits(WithSeason(9999))
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if len(page.Circuits) != 0 {
+		t.Errorf("expected 0 circuits for invalid season, got %d", len(page.Circuits))
+	}
+}
+
 func TestIntegration_GetAllCircuits(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")
@@ -100,5 +115,20 @@ func TestIntegration_GetAllCircuits(t *testing.T) {
 	}
 	if len(circuits) == 0 {
 		t.Errorf("expected at least 1 circuit, got 0")
+	}
+}
+
+func TestIntegration_GetAllCircuitsReturnsNoErrorOnInvalidSeason(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	client := NewClient()
+	circuits, err := client.GetAllCircuits(WithSeason(9999))
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if len(circuits) != 0 {
+		t.Errorf("expected 0 circuits for invalid season, got %d", len(circuits))
 	}
 }

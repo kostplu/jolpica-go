@@ -13,7 +13,7 @@ type ConstructorStandingPage struct {
 func (c *Client) GetConstructorStandings(opts ...Option) (*ConstructorStandingPage, error) {
 	var result apiResponse
 
-	path := buildPath("constructorStandings", opts)
+	path := buildPath("constructorstandings", opts)
 	if err := c.get(path, &result); err != nil {
 		return nil, err
 	}
