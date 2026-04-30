@@ -1,0 +1,13 @@
+{
+  "MRData": {
+    "xmlns": "",
+    "series": "f1",
+    "url": "https://api.jolpi.ca/ergast/f1/status/",
+    "limit": "30",
+    "offset": "0",
+    "total": "136",
+    "StatusTable": {
+      "Status": [{ "statusId": "", "status": "" }]
+    }
+  }
+}

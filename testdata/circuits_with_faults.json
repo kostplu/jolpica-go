@@ -1,0 +1,19 @@
+{
+  "MRData": {
+    "xmlns": "",
+    "series": "f1",
+    "url": "https://api.jolpi.ca/ergast/f1/circuits/",
+    "limit": "30",
+    "offset": "0",
+    "total": "78",
+    "CircuitTable": {
+      "Circuits": [
+        {
+          "circuitId": "",
+          "url": "https://en.wikipedia.org/wiki/Adelaide_Street_Circuit",
+          "Location": { "lat": "-34.9272", "long": "138.617", "locality": "Adelaide", "country": "" }
+        }
+      ]
+    }
+  }
+}
