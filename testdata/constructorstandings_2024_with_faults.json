@@ -1,0 +1,33 @@
+{
+  "MRData": {
+    "xmlns": "",
+    "series": "f1",
+    "url": "https://api.jolpi.ca/ergast/f1/2024/constructorstandings/",
+    "limit": "30",
+    "offset": "0",
+    "total": "10",
+    "StandingsTable": {
+      "season": "2024",
+      "round": "24",
+      "StandingsLists": [
+        {
+          "season": "2024",
+          "round": "24",
+          "ConstructorStandings": [
+            {
+              "position": "1",
+              "positionText": "1",
+              "wins": "",
+              "Constructor": {
+                "constructorId": "",
+                "url": "https://en.wikipedia.org/wiki/McLaren",
+                "name": "McLaren",
+                "nationality": "British"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

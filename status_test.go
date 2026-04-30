@@ -91,6 +91,21 @@ func TestIntegration_GetStatus(t *testing.T) {
 	}
 }
 
+func TestIntegration_GetStatusReturnsNoErrorOnInvalidSeason(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	client := NewClient()
+	page, err := client.GetStatus(WithSeason(9999))
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if len(page.Statuses) != 0 {
+		t.Errorf("expected 0 status entries for invalid season, got %d", len(page.Statuses))
+	}
+}
+
 func TestIntegration_GetAllStatus(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")
@@ -103,5 +118,20 @@ func TestIntegration_GetAllStatus(t *testing.T) {
 	}
 	if len(statuses) == 0 {
 		t.Errorf("expected at least 1 status entry, got 0")
+	}
+}
+
+func TestIntegration_GetAllStatusReturnsNoErrorOnInvalidSeason(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test in short mode")
+	}
+
+	client := NewClient()
+	statuses, err := client.GetAllStatus(WithSeason(9999))
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if len(statuses) != 0 {
+		t.Errorf("expected 0 status entries for invalid season, got %d", len(statuses))
 	}
 }

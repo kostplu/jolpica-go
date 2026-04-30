@@ -98,7 +98,7 @@ func TestIntegration_GetDriversReturnsNoErrorOnInvalidSeason(t *testing.T) {
 	client := NewClient()
 	page, err := client.GetDrivers(WithSeason(9999))
 	if err != nil {
-		t.Fatal("expected error for invalid season, got nil")
+		t.Fatalf("expected no error, got %v", err)
 	}
 	if len(page.Drivers) != 0 {
 		t.Errorf("expected 0 drivers for invalid season, got %d", len(page.Drivers))
@@ -143,7 +143,7 @@ func TestIntegration_GetAllDriversReturnsNoErrorOnInvalidSeason(t *testing.T) {
 	client := NewClient()
 	drivers, err := client.GetAllDrivers(WithSeason(9999))
 	if err != nil {
-		t.Fatal("expected error for invalid season, got nil")
+		t.Fatalf("expected no error, got %v", err)
 	}
 	if len(drivers) != 0 {
 		t.Errorf("expected 0 drivers for invalid season, got %d", len(drivers))
