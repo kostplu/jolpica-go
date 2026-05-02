@@ -36,8 +36,9 @@ if firstRace.Round != 1 {
 	if firstQualifying.Constructor.ConstructorID != "red_bull" {
 		t.Errorf("expected first qualifying result to be for constructor 'red_bull', got '%s'", firstQualifying.Constructor.ConstructorID)
 	}
-	if firstQualifying.Q1 != (LapTime{Duration: time.Duration(60)*time.Minute + time.Duration(30031*time.Millisecond)}) {
-		t.Errorf("expected first qualifying Q1 time to be '1:30.031', got '%s'", firstQualifying.Q1)
+	expectedQ1 := LapTime{Duration: time.Minute + 30*time.Second + 31*time.Millisecond}
+	if firstQualifying.Q1 != expectedQ1 {
+		t.Errorf("expected first qualifying Q1 time to be '1m30.031s', got '%s'", firstQualifying.Q1)
 	}
 	if page.PageInfo.Limit != 30 {
 		t.Errorf("expected page limit to be 30, got %d", page.PageInfo.Limit)
