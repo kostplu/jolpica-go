@@ -36,6 +36,15 @@ func TestGetPitStops_ReturnsParsedPitStops(t *testing.T) {
 	if firstPitStop.Duration != "36.604" {
 		t.Errorf("expected first pit stop duration to be '36.604', got '%s'", firstPitStop.Duration)
 	}
+	if page.PageInfo.Limit != 30 {
+		t.Errorf("expected page limit to be 30, got %d", page.PageInfo.Limit)
+	}
+	if page.PageInfo.Offset != 0 {
+		t.Errorf("expected page offset to be 0, got %d", page.PageInfo.Offset)
+	}
+	if page.PageInfo.Total != 43 {
+		t.Errorf("expected total pit stops to be 43, got %d", page.PageInfo.Total)
+	}
 }
 
 func TestGetPitStops_EmptySeasonReturnsEmptyList(t *testing.T) {
@@ -63,8 +72,8 @@ func TestGetPitStops_FaultyResponseReturnsNoError(t *testing.T) {
 	if len(page.Races) != 1 {
 		t.Errorf("expected 1 race, got %d", len(page.Races))
 	}
-	if len(page.Races[0].PitStops) != 0 {
-		t.Errorf("expected 0 pit stops, got %d", len(page.Races[0].PitStops))
+	if len(page.Races[0].PitStops) != 1 {
+		t.Errorf("expected 1 pit stop, got %d", len(page.Races[0].PitStops))
 	}
 
 	firstRace := page.Races[0]
