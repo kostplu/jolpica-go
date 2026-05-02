@@ -1,4 +1,4 @@
-module github.com/kostplu/go-f1
+module github.com/kostplu/jolpica-go
 
 go 1.25.0
 
