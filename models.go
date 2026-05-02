@@ -102,10 +102,16 @@ type Result struct {
 	FastestLap FastestLap `json:"FastestLap"`
 }
 
+type AverageSpeed struct {
+	Units string `json:"units"`
+	Speed string `json:"speed"`
+}
+
 type FastestLap struct {
 	Rank IntString     `json:"rank"`
 	Lap  IntString     `json:"lap"`
 	Time LapTimeObject `json:"Time"`
+	AverageSpeed AverageSpeed `json:"AverageSpeed"`
 }
 
 type Race struct {

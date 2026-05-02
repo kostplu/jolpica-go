@@ -37,8 +37,8 @@ func TestGetDriverStandings_ReturnsParsedConstructorStandings(t *testing.T) {
 	if page.PageInfo.Offset != 0 {
 		t.Errorf("expected page offset to be 0, got %d", page.PageInfo.Offset)
 	}
-	if page.PageInfo.Total != 20 {
-		t.Errorf("expected total driver standings to be 20, got %d", page.PageInfo.Total)
+	if page.PageInfo.Total != 24 {
+		t.Errorf("expected total driver standings to be 24, got %d", page.PageInfo.Total)
 	}
 	if page.PageInfo.HasNext() {
 		t.Errorf("expected HasNext to be false, got true")
