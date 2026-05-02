@@ -102,10 +102,6 @@ type Result struct {
 	FastestLap FastestLap `json:"FastestLap"`
 }
 
-type LapTimeObject struct {
-	LapTime `json:"time"`
-}
-
 type FastestLap struct {
 	Rank IntString     `json:"rank"`
 	Lap  IntString     `json:"lap"`
@@ -124,7 +120,7 @@ type Race struct {
 	SprintResults     []Result           `json:"SprintResults,omitempty"`
 	PitStops          []PitStop          `json:"PitStops,omitempty"`
 	Laps              []Lap              `json:"Laps,omitempty"`
-	FistPractice      Session            `json:"FirstPractice"`
+	FirstPractice     Session            `json:"FirstPractice"`
 	SecondPractice    Session            `json:"SecondPractice"`
 	ThirdPractice     Session            `json:"ThirdPractice"`
 	Qualifying        Session            `json:"Qualifying"`
