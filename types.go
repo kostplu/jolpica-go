@@ -1,6 +1,7 @@
 package f1
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -38,6 +39,21 @@ func (l *LapTime) UnmarshalJSON(data []byte) error {
 		time.Duration(seconds*float64(time.Second))
 
 	l.Duration = total
+	return nil
+}
+
+type LapTimeObject struct {
+	LapTime `json:"time"`
+}
+
+func (l *LapTimeObject) UnmarshalJSON(data []byte) error {
+	var obj struct {
+		Time LapTime `json:"time"`
+	}
+	if err := json.Unmarshal(data, &obj); err != nil {
+		return err
+	}
+	l.LapTime = obj.Time
 	return nil
 }
 
