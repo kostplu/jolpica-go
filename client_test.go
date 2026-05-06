@@ -39,7 +39,7 @@ func TestGetDrivers_TimeoutReturnsError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	client := NewClientWithBaseURL(server.URL+"/", WitTimeout(100))
+	client := NewClientWithBaseURL(server.URL+"/", WithTimeout(100))
 	_, err := client.GetDrivers(WithSeason(2024))
 	if err == nil {
 		t.Error("expected error for request timeout, got nil")

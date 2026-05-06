@@ -1,38 +1,25 @@
-package f1
+package livetiming
 
 import (
+	"fmt"
 	"sync"
 	"time"
 
 	"github.com/kostplu/jolpica-go/internal/httpclient"
 )
 
-const (
-	defaultBaseURL = "https://api.jolpi.ca/ergast/f1/"
-)
+const baseURL = "https://livetiming.formula1.com/static/"
 
 type Client struct {
-	baseURL  string
-	httpOpts []httpclient.Option
-	http     *httpclient.Client
-	httpOnce sync.Once
+	baseURL   string
+	httpsOpts []httpclient.Option
+	http      *httpclient.Client
+	httpOnce  sync.Once
 }
 
 type ClientOption func(*Client)
 
 func NewClient(opts ...ClientOption) *Client {
-	c := &Client{
-		baseURL: defaultBaseURL,
-	}
-
-	for _, opt := range opts {
-		opt(c)
-	}
-
-	return c
-}
-
-func NewClientWithBaseURL(baseURL string, opts ...ClientOption) *Client {
 	c := &Client{
 		baseURL: baseURL,
 	}
@@ -46,23 +33,29 @@ func NewClientWithBaseURL(baseURL string, opts ...ClientOption) *Client {
 
 func WithCache(path string, ttl time.Duration) ClientOption {
 	return func(c *Client) {
-		c.httpOpts = append(c.httpOpts, httpclient.WithCache(path, ttl))
+		c.httpsOpts = append(c.httpsOpts, httpclient.WithCache(path, ttl))
 	}
 }
 
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(c *Client) {
-		c.httpOpts = append(c.httpOpts, httpclient.WithTimeout(timeout))
+		c.httpsOpts = append(c.httpsOpts, httpclient.WithTimeout(timeout))
 	}
 }
 
 func (c *Client) getHTTP() *httpclient.Client {
 	c.httpOnce.Do(func() {
-		c.http = httpclient.NewClient(c.httpOpts...)
+		c.http = httpclient.NewClient(c.httpsOpts...)
 	})
 	return c.http
 }
 
 func (c *Client) get(path string, dest any) error {
+	fmt.Println(path)
 	return c.getHTTP().Get(c.baseURL+path, dest)
+}
+
+func (c *Client) getRaw(path string) ([]byte, error) {
+	fmt.Println(path)
+	return c.getHTTP().GetRaw(c.baseURL + path)
 }
