@@ -28,7 +28,7 @@ func TestCache_SecondRequestIsCached(t *testing.T) {
 
 	cacheFile := t.TempDir() + "/cache.db"
 
-	client := NewClientWithBaseURL(server.URL+"/", WithCache(cacheFile, 1*time.Hour))
+	client := NewClientWithBaseURL(server.URL, WithCache(cacheFile, 1*time.Hour))
 
 	_, err = client.GetDrivers(WithSeason(2024))
 	if err != nil {

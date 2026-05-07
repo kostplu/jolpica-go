@@ -49,7 +49,7 @@ func (c *cache) get(key string) (string, bool) {
 
 func (c *cache) set(key, value string) error {
 	_, err := c.db.Exec(
-		`INSERT OR UPDATE INTO cache (key, value, cached_at) VALUES (?, ?, ?)`,
+		`INSERT OR REPLACE INTO cache (key, value, cached_at) VALUES (?, ?, ?)`,
 		key, value, time.Now())
 	return err
 }

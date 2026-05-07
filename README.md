@@ -37,6 +37,12 @@ func main() {
 }
 ```
 
+## Live Timing
+
+The [`livetiming`](./livetiming/README.md) package provides access to historical F1 session data with a replay engine and an interactive terminal UI. Browse seasons and races, then watch car positions replay on a terminal-rendered track map.
+
+> Still under construction — see the [livetiming README](./livetiming/README.md) for the current roadmap.
+
 ## Usage
 
 ### Creating a client

@@ -1,5 +1,7 @@
 package livetiming
 
+import "strconv"
+
 func (c *Client) GetAvailableYears() (*YearsResponse, error) {
 	var result YearsResponse
 	if err := c.get("Index.json", &result); err != nil {
@@ -37,6 +39,15 @@ func (c *Client) GetFeed(path string, dest any) error {
 
 func (c *Client) GetFeedRaw(path string) ([]byte, error) {
 	data, err := c.getRaw(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (c *Client) GetMap(circuitKey int, year int) ([]byte, error) {
+	data, err := c.getURL("https://api.multiviewer.app/api/v1/circuits/" + strconv.Itoa(circuitKey) + "/" + strconv.Itoa(year))
 	if err != nil {
 		return nil, err
 	}

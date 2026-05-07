@@ -14,7 +14,7 @@ func newTestClient(t *testing.T, handler http.HandlerFunc) *Client {
 	t.Cleanup(func() { server.Close() })
 
 	return &Client{
-		baseURL: server.URL + "/",
+		baseURL: server.URL,
 	}
 }
 

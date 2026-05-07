@@ -122,3 +122,55 @@ func ParseFeed[T any](data []byte) ([]StreamEntry[T], error) {
 	}
 	return feed, nil
 }
+
+func StreamFeed[T any](entries []StreamEntry[T]) <-chan StreamEntry[T] {
+	ch := make(chan StreamEntry[T], 100)
+
+	go func() {
+		defer close(ch)
+		for _, entry := range entries {
+			ch <- entry
+		}
+	}()
+
+	return ch
+}
+
+func ReplayFeed[T any](in <-chan StreamEntry[T], config ReplayConfig) <-chan T {
+	out := make(chan T, 10)
+
+	go func() {
+		defer close(out)
+
+		currentTime := config.StartTime
+		ticker := time.NewTicker(100 * time.Millisecond)
+		defer ticker.Stop()
+		var pending *StreamEntry[T]
+		for {
+			<-ticker.C
+			// fmt.Println("tick")
+			currentTime += time.Duration(float64(100*time.Millisecond) * config.Speed)
+			if pending == nil {
+				entry, ok := <-in
+				if !ok {
+					return
+				}
+				pending = &entry
+			}
+			for pending != nil && pending.Timestamp <= currentTime {
+				// fmt.Printf("replaying entry with timestamp %v\n", pending.Timestamp)
+				// fmt.Printf("entry data: %+v\n", pending.Data)
+				out <- pending.Data
+				pending = nil
+
+				entry, ok := <-in
+				if !ok {
+					return
+				}
+				pending = &entry
+			}
+		}
+	}()
+
+	return out
+}

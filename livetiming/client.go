@@ -1,7 +1,6 @@
 package livetiming
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -51,11 +50,13 @@ func (c *Client) getHTTP() *httpclient.Client {
 }
 
 func (c *Client) get(path string, dest any) error {
-	fmt.Println(path)
 	return c.getHTTP().Get(c.baseURL+path, dest)
 }
 
 func (c *Client) getRaw(path string) ([]byte, error) {
-	fmt.Println(path)
 	return c.getHTTP().GetRaw(c.baseURL + path)
+}
+
+func (c *Client) getURL(url string) ([]byte, error) {
+	return c.getHTTP().GetRaw(url)
 }

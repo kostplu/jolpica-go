@@ -184,8 +184,12 @@ type SessionStatus struct {
 }
 
 type TimingDataF1 struct {
-	Lines    map[string]TimingDataF1DriverLine `json:"Lines"`
-	Withheld bool                              `json:"Withheld"`
+	NoEntries        []int                             `json:"NoEntries"`
+	SessionPart      int                               `json:"SessionPart"`
+	CutOffTime       string                            `json:"CutOffTime"`
+	CutOffPercentage string                            `json:"CutOffPercentage"`
+	Lines            map[string]TimingDataF1DriverLine `json:"Lines"`
+	Withheld         bool                              `json:"Withheld"`
 }
 
 type TimingDataF1DriverLine struct {
@@ -217,6 +221,12 @@ type TimingDataF1DriverLine struct {
 		OverallFastest  bool   `json:"OverallFastest"`
 		PersonalFastest bool   `json:"PersonalFastest"`
 	} `json:"LastLapTime"`
+	KnockedOut bool `json:"KnockedOut"`
+	Cutoff     bool `json:"Cutoff"`
+	Stats      []struct {
+		TimeDiffToFastest       string `json:"TimeDiffToFastest"`
+		TimeDiffToPositionAhead string `json:"TimeDiffToPositionAhead"`
+	} `json:"Stats"`
 }
 
 type SectorEntry struct {
@@ -485,4 +495,54 @@ type TeamRadioCapture struct {
 type StreamEntry[T any] struct {
 	Timestamp time.Duration
 	Data      T
+}
+
+type ReplayConfig struct {
+	StartTime time.Duration
+	Speed     float64
+}
+
+type Map struct {
+	Corners             []MapPoint   `json:"corners"`
+	MarshalLights       []MapPoint   `json:"marshalLights"`
+	MarshalSectors      []MapPoint   `json:"marshalSectors"`
+	CandidateLap        CandidateLap `json:"candidateLap"`
+	CircuitKey          int          `json:"circuitKey"`
+	CircuitName         string       `json:"circuitName"`
+	CountryIocCode      string       `json:"countryIocCode"`
+	CountryKey          int          `json:"countryKey"`
+	CountryName         string       `json:"countryName"`
+	Location            string       `json:"location"`
+	MeetingKey          string       `json:"meetingKey"`
+	MeetingName         string       `json:"meetingName"`
+	MeetingOfficialName string       `json:"meetingOfficialName"`
+	MiniSectorsIndexes  []int        `json:"miniSectorsIndexes"`
+	RaceDate            string       `json:"raceDate"`
+	Rotation            float64      `json:"rotation"`
+	Round               int          `json:"round"`
+	X                   []int        `json:"x"`
+	Y                   []int        `json:"y"`
+	Year                int          `json:"year"`
+}
+
+type MapPoint struct {
+	Angle         float64       `json:"angle"`
+	Length        float64       `json:"length"`
+	Number        int           `json:"number"`
+	TrackPosition TrackPosition `json:"trackPosition"`
+}
+
+type TrackPosition struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
+}
+
+type CandidateLap struct {
+	DriverNumber        string  `json:"driverNumber"`
+	LapNumber           int     `json:"lapNumber"`
+	LapStartDate        string  `json:"lapStartDate"`
+	LapStartSessionTime float64 `json:"lapStartSessionTime"`
+	LapTime             float64 `json:"lapTime"`
+	Session             string  `json:"session"`
+	SessionStartTime    float64 `json:"sessionStartTime"`
 }
