@@ -6,11 +6,22 @@ import (
 	"math"
 	"slices"
 	"strings"
+	"time"
 
 	"charm.land/bubbles/v2/list"
 	tea "charm.land/bubbletea/v2"
 	"github.com/kostplu/jolpica-go/livetiming"
 )
+
+type trackProjection struct {
+	minX, maxX, minY, maxY float64
+	scale                  float64
+	offsetX, offsetY       float64
+	cx, cy                 float64
+	degrees                float64
+	pixelH                 int
+	cellAspect             float64
+}
 
 func fetchYears(client *livetiming.Client) tea.Cmd {
 	return func() tea.Msg {
@@ -77,11 +88,73 @@ func startReplay(client *livetiming.Client, sessionPath string, session livetimi
 			return errMsg{err}
 		}
 
-		return streaming{mapDataJSON.X, mapDataJSON.Y, mapDataJSON.Rotation}
+		data, err := client.GetFeedRaw(session.Path + raceFeeds.Feeds.PositionZ.StreamPath)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+		}
+		feed, err := livetiming.ParseFeed[livetiming.PositionZ](data)
+		if err != nil {
+			fmt.Printf("error: %v\n", err)
+		}
+
+		config := livetiming.ReplayConfig{StartTime: 59 * time.Minute, Speed: 1}
+		// read feed until the start time (e.g. 15 minutes) is reached, then start the feedStream
+		// evaluate all read entries to update the initial car locations
+		startIdx := 0
+		initialLocations := make([]livetiming.CarLocation, 0)
+
+		for i, entry := range feed {
+			if entry.Timestamp >= config.StartTime {
+				startIdx = i
+				break
+			}
+			// merge entry.Data positions into initialCars
+			for _, position := range entry.Data.Position {
+				for key, entry := range position.Entries {
+					idx := slices.IndexFunc(initialLocations, func(cl livetiming.CarLocation) bool { return cl.DriverNumber == key })
+					if idx == -1 {
+						initialLocations = append(initialLocations, livetiming.CarLocation{PosX: entry.X, PosY: entry.Y, DriverNumber: key})
+					} else {
+						initialLocations[idx].PosX = entry.X
+						initialLocations[idx].PosY = entry.Y
+					}
+				}
+			}
+		}
+
+		feedStream := livetiming.StreamFeed(feed[startIdx:])
+		clockStream := livetiming.ReplayFeed(feedStream, config)
+
+		return mapLoaded{mapDataJSON.X, mapDataJSON.Y, mapDataJSON.Rotation, clockStream, initialLocations}
 	}
 }
 
-func renderTrack(xs, ys []int, width, height int, degrees float64) string {
+func waitForFrames(frames <-chan livetiming.PositionZ, current []livetiming.CarLocation) tea.Cmd {
+	return func() tea.Msg {
+		// carLocationData := make([]livetiming.CarLocation, 0)
+
+		frame, ok := <-frames
+		if !ok {
+			return replayDoneMsg{}
+		}
+		timestamp := time.Time{}
+		for _, position := range frame.Position {
+			timestamp = position.Timestamp
+			for key, entry := range position.Entries {
+				idx := slices.IndexFunc(current, func(cl livetiming.CarLocation) bool { return cl.DriverNumber == key })
+				if idx == -1 {
+					current = append(current, livetiming.CarLocation{PosX: entry.X, PosY: entry.Y, DriverNumber: key})
+				} else {
+					current[idx].PosX = entry.X
+					current[idx].PosY = entry.Y
+				}
+			}
+		}
+		return updateLocations{carLocations: current, timestamp: timestamp}
+	}
+}
+
+func renderTrack(xs, ys []int, width, height int, degrees float64, carLocations []livetiming.CarLocation, timestamp time.Time) string {
 	quadrant := []rune{
 		' ', // 0000 - empty
 		'▘', // 0001 - top-left
@@ -99,9 +172,10 @@ func renderTrack(xs, ys []int, width, height int, degrees float64) string {
 		'▙', // 1101 - all except top-right
 		'▟', // 1110 - all except top-left
 		'█', // 1111 - full
+		'O', // car location
 	}
 
-	rx, ry := rotatePoints(xs, ys, degrees)
+	rx, ry, cx, cy := rotatePoints(xs, ys, degrees)
 
 	const padding = 4
 
@@ -141,7 +215,20 @@ func renderTrack(xs, ys []int, width, height int, degrees float64) string {
 			pixels[ty][tx] = true
 		}
 	}
-
+	trackProjection := trackProjection{
+		minX:       minX,
+		maxX:       maxX,
+		minY:       minY,
+		maxY:       maxY,
+		scale:      scale,
+		offsetX:    offsetX,
+		offsetY:    offsetY,
+		cx:         cx,
+		cy:         cy,
+		degrees:    degrees,
+		pixelH:     len(pixels),
+		cellAspect: cellAspect,
+	}
 	var sb strings.Builder
 	for row := 0; row < len(pixels)-1; row += 2 {
 		for col := 0; col < len(pixels[0])-1; col += 2 {
@@ -158,14 +245,18 @@ func renderTrack(xs, ys []int, width, height int, degrees float64) string {
 			if pixels[row+1][col+1] {
 				idx |= 8
 			} // bot-right
+			if carAtLocation(carLocations, col, row, trackProjection) {
+				idx = 16
+			}
 			sb.WriteRune(quadrant[idx])
 		}
 		sb.WriteByte('\n')
 	}
-	return sb.String()
+	header := fmt.Sprintf("T+%v\n", timestamp)
+	return header + sb.String()
 }
 
-func rotatePoints(xs, ys []int, degrees float64) ([]float64, []float64) {
+func rotatePoints(xs, ys []int, degrees float64) ([]float64, []float64, float64, float64) {
 	rad := degrees * math.Pi / 180.0
 
 	// find center
@@ -185,5 +276,31 @@ func rotatePoints(xs, ys []int, degrees float64) ([]float64, []float64) {
 		ry[i] = x*math.Sin(rad) + y*math.Cos(rad) + cy
 	}
 
+	return rx, ry, cx, cy
+}
+
+func rotatePoint(x, y int, degrees, cx, cy float64) (float64, float64) {
+	rad := degrees * math.Pi / 180.0
+
+	nx := float64(x) - cx
+	ny := float64(y) - cy
+
+	rx := nx*math.Cos(rad) - ny*math.Sin(rad) + cx
+	ry := nx*math.Sin(rad) + ny*math.Cos(rad) + cy
 	return rx, ry
+}
+
+func carAtLocation(carLocations []livetiming.CarLocation, col, row int, trackProjection trackProjection) bool {
+	for _, loc := range carLocations {
+		rx, ry := rotatePoint(loc.PosX, loc.PosY, trackProjection.degrees, trackProjection.cx, trackProjection.cy)
+
+		tx := int((rx-trackProjection.minX)*trackProjection.scale + trackProjection.offsetX)
+		ty := int((ry-trackProjection.minY)*trackProjection.scale*trackProjection.cellAspect + trackProjection.offsetY)
+		ty = (trackProjection.pixelH - 1) - ty // flip Y
+
+		if tx >= col && tx <= col+1 && ty >= row && ty <= row+1 {
+			return true
+		}
+	}
+	return false
 }

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -84,6 +85,12 @@ func DecodeBase64AndDecompress(data []byte) (string, error) {
 func ParseFeed[T any](data []byte) ([]StreamEntry[T], error) {
 	var feed []StreamEntry[T]
 	scanner := bufio.NewScanner(bytes.NewReader(data))
+	f, err := os.Create("feed.json")
+	if err != nil {
+		return nil, fmt.Errorf("error creating file: %w", err)
+	}
+	defer f.Close()
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
@@ -107,6 +114,7 @@ func ParseFeed[T any](data []byte) ([]StreamEntry[T], error) {
 		} else {
 			jsonData = raw
 		}
+		f.WriteString(jsonData + "\n")
 		var result T
 		err = json.Unmarshal([]byte(jsonData), &result)
 		if err != nil {
@@ -146,9 +154,9 @@ func ReplayFeed[T any](in <-chan StreamEntry[T], config ReplayConfig) <-chan T {
 		ticker := time.NewTicker(100 * time.Millisecond)
 		defer ticker.Stop()
 		var pending *StreamEntry[T]
+
 		for {
 			<-ticker.C
-			// fmt.Println("tick")
 			currentTime += time.Duration(float64(100*time.Millisecond) * config.Speed)
 			if pending == nil {
 				entry, ok := <-in
@@ -158,8 +166,6 @@ func ReplayFeed[T any](in <-chan StreamEntry[T], config ReplayConfig) <-chan T {
 				pending = &entry
 			}
 			for pending != nil && pending.Timestamp <= currentTime {
-				// fmt.Printf("replaying entry with timestamp %v\n", pending.Timestamp)
-				// fmt.Printf("entry data: %+v\n", pending.Data)
 				out <- pending.Data
 				pending = nil
 

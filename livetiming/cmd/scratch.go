@@ -1,13 +1,18 @@
-package scratch
+package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/kostplu/jolpica-go/livetiming"
 )
 
 func main() {
+	scratch()
+}
+
+func scratch() {
 	client := livetiming.NewClient(livetiming.WithCache("/tmp/livetiming.db", 24*time.Hour))
 	years, err := client.GetAvailableYears()
 	if err != nil {
@@ -48,10 +53,13 @@ func main() {
 				fmt.Printf("parsed %d entries\n", len(feed))
 
 				feedStream := livetiming.StreamFeed(feed)
-				clockStream := livetiming.ReplayFeed(feedStream, livetiming.ReplayConfig{StartTime: 10 * time.Minute, Speed: 5.0})
+				clockStream := livetiming.ReplayFeed(feedStream, livetiming.ReplayConfig{StartTime: 30 * time.Minute, Speed: 5.0})
 				for frame := range clockStream {
 					for _, position := range frame.Position {
-						livetiming.PrettyLog(position.Timestamp)
+						for key, entry := range position.Entries {
+							fmt.Printf("Car: %s: X: %s, Y: %s", key, strconv.Itoa(entry.X), strconv.Itoa(entry.Y))
+						}
+						// livetiming.PrettyLog(position.Entries)
 					}
 				}
 			}

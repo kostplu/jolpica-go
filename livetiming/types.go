@@ -546,3 +546,9 @@ type CandidateLap struct {
 	Session             string  `json:"session"`
 	SessionStartTime    float64 `json:"sessionStartTime"`
 }
+
+type CarLocation struct {
+	PosX         int
+	PosY         int
+	DriverNumber string
+}
